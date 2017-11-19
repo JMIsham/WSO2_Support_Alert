@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventPublisher name="Incident_Overall_Publisher" statistics="disable"
+  trace="disable" xmlns="http://wso2.org/carbon/eventpublisher">
+  <from streamName="incidentCreated_Overall" version="1.0.0"/>
+  <mapping customMapping="enable" type="text">
+    <inline>    &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+    &lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+        &lt;head&gt; 
+            &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt; 
+            &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"&gt; 
+            &lt;base href="https://support.wso2.com/jira"&gt; 
+            &lt;style&gt;
+                    * {
+                          -webkit-box-sizing: border-box;
+                          -moz-box-sizing: border-box;
+                          box-sizing: border-box;
+                        }
+                        *:before, *:after {
+                          -webkit-box-sizing: border-box;
+                          -moz-box-sizing: border-box;
+                          box-sizing: border-box;
+                        }
+
+                        body {
+                          font-family: "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
+                          color: #5e5d52;
+                        }
+
+                        a {
+                          color: #337aa8;
+                        }
+                        a:hover, a:focus {
+                          color: #04305b;
+                        }
+
+                        hr {
+                            display: block;
+                            height: 1px;
+                            border: 0;
+                            border-top: 2px solid #ccc;
+                            margin: 1em -2em;
+                            padding: 0;
+                        }
+
+                        .container {
+                          margin: 5% 3%;
+                        }
+                        @media (min-width: 48em) {
+                          .container {
+                            margin: 2%;
+                          }
+                        }
+                        @media (min-width: 100em) {
+                          .container {
+                            margin: 2em auto;
+                            max-width: 100em;
+                          }
+                        }
+
+                        .responsive-table {
+                          width: 100%;
+                          margin-bottom: 1.5em;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table {
+                            font-size: .9em;
+                          }
+                        }
+                        @media (min-width: 62em) {
+                          .responsive-table {
+                            font-size: 1em;
+                          }
+                        }
+                        .responsive-table thead {
+                          position: absolute;
+                          clip: rect(1px 1px 1px 1px);
+                          /* IE6, IE7 */
+                          clip: rect(1px, 1px, 1px, 1px);
+                          padding: 0;
+                          border: 0;
+                          height: 1px;
+                          width: 1px;
+                          overflow: hidden;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table thead {
+                            position: relative;
+                            clip: auto;
+                            height: auto;
+                            width: auto;
+                            overflow: auto;
+                          }
+                        }
+                        .responsive-table thead th {
+                          background-color: #2e669e;
+                          border: 1px solid #2e669e;
+                          font-weight: normal;
+                          text-align: center;
+                          color: white;
+                        }
+                        .responsive-table thead th:first-of-type {
+                          text-align: left;
+                        }
+                        .responsive-table tbody,
+                        .responsive-table tr,
+                        .responsive-table th,
+                        .responsive-table td {
+                          display: block;
+                          padding: 0;
+                          text-align: left;
+                          white-space: normal;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tr {
+                            display: table-row;
+                          }
+                        }
+                        .responsive-table th,
+                        .responsive-table td {
+                          padding: .5em;
+                          vertical-align: middle;
+                        }
+                        @media (min-width: 30em) {
+                          .responsive-table th,
+                          .responsive-table td {
+                            padding: .75em .5em;
+                          }
+                        } 
+                        @media (min-width: 48em) {
+                          .responsive-table th,
+                          .responsive-table td {
+                            display: table-cell;
+                            padding: .5em;
+                          }
+                        }
+                        @media (min-width: 62em) {
+                          .responsive-table th,
+                          .responsive-table td {
+                            padding: .75em .5em;
+                          }
+                        }
+                        @media (min-width: 75em) {
+                          .responsive-table th,
+                          .responsive-table td {
+                            padding: .75em;
+                          }
+                        }
+                        .responsive-table caption {
+                          margin-bottom: 1em;
+                          font-size: 1em;
+                          font-weight: bold;
+                          text-align: center;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table caption {
+                            font-size: 1.5em;
+                          }
+                        }
+                        .responsive-table tfoot {
+                          font-size: .8em;
+                          font-style: italic;
+                        }
+                        @media (min-width: 62em) {
+                          .responsive-table tfoot {
+                            font-size: .9em;
+                          }
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tbody {
+                            display: table-row-group;
+                          }
+                        }
+                        .responsive-table tbody tr {
+                          margin-bottom: 1em;
+                          border: 2px solid #2e669e;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tbody tr {
+                            display: table-row;
+                            border-width: 1px;
+                          }
+                        }
+                        .responsive-table tbody tr:last-of-type {
+                          margin-bottom: 0;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tbody tr:nth-of-type(even) {
+                            background-color: rgba(94, 93, 82, 0.1);
+                          }
+                        }
+                        .responsive-table tbody th[scope="row"] {
+                          background-color: #2e669e;
+                          color: white;
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tbody th[scope="row"] {
+                            background-color: transparent;
+                            color: #5e5d52;
+                            text-align: left;
+                          }
+                        }
+                        .responsive-table tbody td {
+                          text-align: right;
+                        }
+                        @media (min-width: 30em) {
+                          .responsive-table tbody td {
+                            border-bottom: 1px solid #2e669e;
+                          }
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tbody td {
+                            text-align: center;
+                          }
+                        }
+                        .responsive-table tbody td[data-type=currency] {
+                          text-align: right;
+                        }
+                        .responsive-table tbody td[data-title]:before {
+                          content: attr(data-title);
+                          float: left;
+                          font-size: .8em;
+                          color: rgba(94, 93, 82, 0.75);
+                        }
+                        @media (min-width: 30em) {
+                          .responsive-table tbody td[data-title]:before {
+                            font-size: .9em;
+                          }
+                        }
+                        @media (min-width: 48em) {
+                          .responsive-table tbody td[data-title]:before {
+                            content: none;
+                          }
+                        }
+
+                .button1{
+                            background-color: #4CAF50; /* Green */
+                            border: none;color: white;
+                            padding: 3px 6px;
+                            text-align: center;
+                            text-decoration: none;
+                            display: inline-block;
+                            font-size: 12px;
+                            margin: 4px 2px;
+                            -webkit-transition-duration: 0.4s; /* Safari */
+                            transition-duration: 0.4s;
+                            cursor: pointer;
+                            border-radius: 8px;
+                            background-color: white; 
+                            color: black; 
+                            border: 2px solid #2e669e;}
+                .button1:hover {
+                            background-color: #2e669e;
+                            color: white;
+    }
+            &lt;/style&gt;
+            
+            &lt;title&gt;Message Title&lt;/title&gt; 
+        &lt;/head&gt; 
+        &lt;body class="jira" style="color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.429"&gt; 
+            &lt;table id="background-table" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f5f5f5; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt" bgcolor="#f5f5f5"&gt; 
+                &lt;!-- header here --&gt; 
+                &lt;tbody&gt;
+                    &lt;tr&gt; 
+                        &lt;td id="header-pattern-container" style="padding: 0px; border-collapse: collapse; padding: 10px 20px"&gt; 
+                            &lt;table id="header-pattern" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                &lt;tbody&gt;
+                                    &lt;tr&gt; 
+                                        &lt;td id="header-avatar-image-container" valign="top" style="padding: 0px; border-collapse: collapse; vertical-align: top; width: 32px; padding-right: 8px" width="32"&gt; &lt;img id="header-avatar-image" class="image_fix" src="https://support-staging.wso2.com/jira/secure/projectavatar?pid=14292&amp;avatarId=12520" height="32" width="32" border="0" style="border-radius: 3px; vertical-align: top"&gt; &lt;/td&gt; 
+                                        &lt;td id="header-text-container" valign="middle" style="padding: 0px; border-collapse: collapse; vertical-align: middle; font-family: Arial, sans-serif; font-size: 14px; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 1px"&gt; &lt;strong&gt;Too many Incidents have been Created&lt;/strong&gt;&lt;/td&gt; 
+                                    &lt;/tr&gt; 
+                                &lt;/tbody&gt;
+                            &lt;/table&gt; &lt;/td&gt; 
+                    &lt;/tr&gt; 
+                    &lt;tr&gt; 
+                        &lt;td id="email-content-container" style="paddingng: 0px; border-collapse: collapse; padding: 0 20px"&gt; 
+                            &lt;table id="email-content-table" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0; border-collapse: separate"&gt; 
+                                &lt;tbody&gt;
+                                    &lt;tr&gt; 
+                                        &lt;td class="email-content-main mobile-expand " style="padding: 0px; border-collapse: collapse; border-left: 1px solid #cccccc; border-right: 1px solid #cccccc; border-top: 0; border-bottom: 0; padding: 0 15px 0 16px; background-color: #ffffff" bgcolor="#ffffff"&gt; 
+                                            &lt;table class="page-title-pattern" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                                &lt;tbody&gt;
+                                                    &lt;tr&gt; 
+                                                        &lt;td style="vertical-align: top;; padding: 0px; border-collapse: collapse; padding-right: 5px; font-size: 20px; color:#2e669e; line-height: 30px; mso-line-height-rule: exactly" class="page-title-pattern-header-container"&gt; &lt;span class="page-title-pattern-header" style="font-family: Arial, sans-serif; padding: 0; font-size: 20px; line-height: 30px; mso-text-raise: 2px; mso-line-height-rule: exactly; vertical-align: middle"&gt;{{incidentCount}} Incidents are been Created since {{minTime}} &lt;/span&gt; &lt;/td&gt;
+                                                        &lt;td style="padding: 0px; border-collapse: collapse; font: normal 14px/20px Arial, sans-serif; padding: 2px 0 2px 5px; vertical-align: top"&gt; &lt;a class="button1" target="_blank"  href="https://support-staging.wso2.com/jira/browse/{{latestIssue}}?jql=created%20%3E%3D%20%22{{minTime}}%22%20AND%20created%20%3C%20%22{{maxTime}}%22and%20issuetype%20%3D%20Incident%20ORDER%20BY%20updated%20DESC"&gt;Go to Dashbord&lt;/a&gt; &lt;/td&gt;   
+                                                    &lt;/tr&gt;   
+                                                &lt;/tbody&gt;
+                                            &lt;/table&gt; &lt;/td&gt; 
+                                    &lt;/tr&gt; 
+                                    &lt;tr&gt; 
+                                        &lt;td class="email-content-main mobile-expand  wrapper-special-margin" style="padding: 0px; border-collapse: collapse; border-left: 1px solid #cccccc; border-right: 1px solid #cccccc; border-top: 0; border-bottom: 0; padding: 0 15px 0 16px; background-color: #ffffff; padding-top: 10px; padding-bottom: 5px" bgcolor="#ffffff"&gt; 
+                                            &lt;table class="keyvalue-table" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                                &lt;tbody&gt;
+                                                    &lt;tr&gt; 
+                                                        &lt;th style="color: #707070; font: normal 14px/20px Arial, sans-serif; text-align: left; vertical-align: top; padding: 2px 0"&gt;JQL Query:&lt;/th&gt; 
+                                                        &lt;td style="padding: 0px; border-collapse: collapse; font: normal 14px/20px Arial, sans-serif; padding: 2px 0 2px 5px; vertical-align: top"&gt; &lt;span class="diffaddedchars" style="background-color:#ddfade;"&gt;created &gt;= "{{minTime}}" AND created &lt; "{{maxTime}}" and issuetype = Incident ORDER BY updated DESC&lt;/span&gt; &lt;/td&gt; 
+                                                    &lt;/tr&gt; 
+                                                &lt;/tbody&gt;
+                                            &lt;/table&gt; &lt;/td&gt; 
+                                    &lt;/tr&gt;
+                                    &lt;tr&gt; 
+                                        &lt;td class="email-content-main mobile-expand " style="padding: 0px; border-collapse: collapse; border-left: 1px solid #cccccc; border-right: 1px solid #cccccc; border-top: 0; border-bottom: 0; padding: 0 15px 0 16px; background-color: #ffffff" bgcolor="#ffffff"&gt; 
+                                            &lt;table class="page-title-pattern" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                                &lt;tbody&gt;
+                                                    &lt;tr&gt; 
+                                                        &lt;div class=container&gt;
+                                                            &lt;div class=container&gt;
+                                                                &lt;table class=responsive-table&gt;
+                                                                    &lt;caption&gt;Ticket Summary&lt;/caption&gt;
+                                                                    &lt;thead&gt;
+                                                                        &lt;tr&gt;
+                                                                            &lt;th scope=col&gt; Project&lt;/th&gt;
+                                                                            &lt;th scope=col&gt; Ticket&lt;/th&gt;
+                                                                            &lt;th scope=col&gt; Summary&lt;/th&gt;
+                                                                            &lt;th scope=col&gt; Severity&lt;/th&gt;
+                                                                            &lt;th scope=col&gt; Created Time&lt;/th&gt;
+                                                                        &lt;/tr&gt;
+                                                                    &lt;/thead&gt;
+                                                                    {{tableBody}}
+                                                                &lt;/table&gt;
+                                                            &lt;/div&gt;
+                                                        &lt;/div&gt;
+                                                    &lt;/tr&gt;   
+                                                &lt;/tbody&gt;
+                                            &lt;/table&gt; 
+                                        &lt;/td&gt; 
+                                    &lt;/tr&gt;
+                                &lt;/tbody&gt;
+                            &lt;/table&gt; 
+                        &lt;/td&gt; 
+                    &lt;/tr&gt; 
+                &lt;/tbody&gt;
+            &lt;/table&gt;   
+        &lt;/body&gt;
+    &lt;/html&gt; 
+                    </inline>
+  </mapping>
+  <to eventAdapterType="email">
+    <property name="email.subject">Support Alert - Incidents Created</property>
+    <property name="email.address">isham@wso2.com</property>
+    <property name="email.type">text/html</property>
+  </to>
+</eventPublisher>

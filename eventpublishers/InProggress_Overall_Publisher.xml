@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventPublisher name="InProggress_Overall_Publisher"
+  statistics="disable" trace="disable" xmlns="http://wso2.org/carbon/eventpublisher">
+  <from streamName="inProgress_Overall" version="1.0.0"/>
+  <mapping customMapping="enable" type="text">
+    <inline>    &lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+    &lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+        &lt;head&gt; 
+            &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8"&gt; 
+            &lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"&gt; 
+            &lt;base href="https://support.wso2.com/jira"&gt; 
+            &lt;style&gt;
+                .button1{
+                            background-color: #4CAF50; /* Green */
+                            border: none;color: white;
+                            padding: 3px 6px;
+                            text-align: center;
+                            text-decoration: none;
+                            display: inline-block;
+                            font-size: 12px;
+                            margin: 4px 2px;
+                            -webkit-transition-duration: 0.4s; /* Safari */
+                            transition-duration: 0.4s;
+                            cursor: pointer;
+                            border-radius: 8px;
+                            background-color: white; 
+                            color: black; 
+                            border: 2px solid #2e669e;}
+                .button1:hover {
+                            background-color: #2e669e;
+                            color: white;
+    }
+            &lt;/style&gt;
+            
+            &lt;title&gt;Message Title&lt;/title&gt; 
+        &lt;/head&gt; 
+        &lt;body class="jira" style="color: #333333; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.429"&gt; 
+            &lt;table id="background-table" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f5f5f5; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt" bgcolor="#f5f5f5"&gt; 
+                &lt;!-- header here --&gt; 
+                &lt;tbody&gt;
+                    &lt;tr&gt; 
+                        &lt;td id="header-pattern-container" style="padding: 0px; border-collapse: collapse; padding: 10px 20px"&gt; 
+                            &lt;table id="header-pattern" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                &lt;tbody&gt;
+                                    &lt;tr&gt; 
+                                        &lt;td id="header-avatar-image-container" valign="top" style="padding: 0px; border-collapse: collapse; vertical-align: top; width: 32px; padding-right: 8px" width="32"&gt; &lt;img id="header-avatar-image" class="image_fix" src="https://support-staging.wso2.com/jira/secure/projectavatar?pid=14292&amp;avatarId=12520" height="32" width="32" border="0" style="border-radius: 3px; vertical-align: top"&gt; &lt;/td&gt; 
+                                        &lt;td id="header-text-container" valign="middle" style="padding: 0px; border-collapse: collapse; vertical-align: middle; font-family: Arial, sans-serif; font-size: 14px; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 1px"&gt; &lt;strong&gt;Too Many Tickets are in Progress&lt;/strong&gt;&lt;/td&gt; 
+                                    &lt;/tr&gt; 
+                                &lt;/tbody&gt;
+                            &lt;/table&gt; &lt;/td&gt; 
+                    &lt;/tr&gt; 
+                    &lt;tr&gt; 
+                        &lt;td id="email-content-container" style="paddingng: 0px; border-collapse: collapse; padding: 0 20px"&gt; 
+                            &lt;table id="email-content-table" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0; border-collapse: separate"&gt; 
+                                &lt;tbody&gt;
+                                    &lt;tr&gt; 
+                                        &lt;td class="email-content-main mobile-expand " style="padding: 0px; border-collapse: collapse; border-left: 1px solid #cccccc; border-right: 1px solid #cccccc; border-top: 0; border-bottom: 0; padding: 0 15px 0 16px; background-color: #ffffff" bgcolor="#ffffff"&gt; 
+                                            &lt;table class="page-title-pattern" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                                &lt;tbody&gt;
+                                                    &lt;tr&gt; 
+                                                        &lt;td style="vertical-align: top;; padding: 0px; border-collapse: collapse; padding-right: 5px; font-size: 20px; color:#2e669e; line-height: 30px; mso-line-height-rule: exactly" class="page-title-pattern-header-container"&gt; &lt;span class="page-title-pattern-header" style="font-family: Arial, sans-serif; padding: 0; font-size: 20px; line-height: 30px; mso-text-raise: 2px; mso-line-height-rule: exactly; vertical-align: middle"&gt;{{issueCount}} Tickets are in Progress at the Moment&lt;/span&gt; &lt;/td&gt;
+                                                        &lt;td style="padding: 0px; border-collapse: collapse; font: normal 14px/20px Arial, sans-serif; padding: 2px 0 2px 5px; vertical-align: top"&gt; &lt;a class="button1" target="_blank"  href="https://support-staging.wso2.com/jira/browse/{{latestIssue}}?jql=status%20%3D%20%22In%20Progress%22%20ORDER%20BY%20updated%20DESC"&gt;Go to Dashbord&lt;/a&gt; &lt;/td&gt;   
+                                                    &lt;/tr&gt;   
+                                                &lt;/tbody&gt;
+                                            &lt;/table&gt; &lt;/td&gt; 
+                                    &lt;/tr&gt; 
+                                    &lt;tr&gt; 
+                                        &lt;td class="email-content-main mobile-expand  wrapper-special-margin" style="padding: 0px; border-collapse: collapse; border-left: 1px solid #cccccc; border-right: 1px solid #cccccc; border-top: 0; border-bottom: 0; padding: 0 15px 0 16px; background-color: #ffffff; padding-top: 10px; padding-bottom: 5px" bgcolor="#ffffff"&gt; 
+                                            &lt;table class="keyvalue-table" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                                &lt;tbody&gt;
+                                                    &lt;tr&gt; 
+                                                        &lt;th style="color: #707070; font: normal 14px/20px Arial, sans-serif; text-align: left; vertical-align: top; padding: 2px 0"&gt;JQL Query:&lt;/th&gt; 
+                                                        &lt;td style="padding: 0px; border-collapse: collapse; font: normal 14px/20px Arial, sans-serif; padding: 2px 0 2px 5px; vertical-align: top"&gt; &lt;span class="diffaddedchars" style="background-color:#ddfade;"&gt;status = "In Progress" ORDER BY updated DESC&lt;/span&gt; &lt;/td&gt; 
+
+                                                    &lt;/tr&gt; 
+                                                &lt;/tbody&gt;
+                                            &lt;/table&gt; &lt;/td&gt; 
+                                    &lt;/tr&gt; 
+                                    &lt;tr&gt; 
+                                        &lt;td class="email-content-main mobile-expand " style="padding: 0px; border-collapse: collapse; border-left: 1px solid #cccccc; border-right: 1px solid #cccccc; border-top: 0; border-bottom: 0; padding: 0 15px 0 16px; background-color: #ffffff" bgcolor="#ffffff"&gt; 
+                                            &lt;table id="actions-pattern" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-family: Arial, sans-serif; font-size: 14px; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 1px"&gt; 
+                                                &lt;tbody&gt;
+                                                    &lt;tr&gt; 
+                                                        &lt;td id="actions-pattern-container" valign="middle" style="padding: 0px; border-collapse: collapse; padding: 10px 0 10px 24px; vertical-align: middle; padding-left: 0"&gt; 
+                                                             &lt;/td&gt; 
+                                                    &lt;/tr&gt; 
+                                                &lt;/tbody&gt;
+                                            &lt;/table&gt; &lt;/td&gt; 
+                                    &lt;/tr&gt; 
+                                    &lt;!-- there needs to be content in the cell for it to render in some clients --&gt; 
+                                
+                                &lt;/tbody&gt;
+                            &lt;/table&gt; &lt;/td&gt; 
+                    &lt;/tr&gt; 
+                    &lt;tr&gt; 
+                        &lt;td id="footer-pattern" style="padding: 0px; border-collapse: collapse; padding: 12px 20px"&gt; 
+                            &lt;table id="footer-pattern-container" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
+                                &lt;tbody&gt;
+                                    &lt;tr&gt; 
+                                        &lt;td id="footer-pattern-text" class="mobile-resize-text" width="100%" style="padding: 0px; border-collapse: collapse; color: #999999; font-size: 12px; line-height: 18px; font-family: Arial, sans-serif; mso-line-height-rule: exactly; mso-text-raise: 2px"&gt; This is a test message &lt;/td&gt; 
+                                    
+                                    &lt;/tr&gt; 
+                                &lt;/tbody&gt;
+                            &lt;/table&gt; &lt;/td&gt; 
+                    &lt;/tr&gt; 
+                &lt;/tbody&gt;
+            &lt;/table&gt;   
+        &lt;/body&gt;
+    &lt;/html&gt; 
+                    </inline>
+  </mapping>
+  <to eventAdapterType="email">
+    <property name="email.subject">Support Alert - Tickets are in Progress</property>
+    <property name="email.address">isham@wso2.com</property>
+    <property name="email.type">text/html</property>
+  </to>
+</eventPublisher>

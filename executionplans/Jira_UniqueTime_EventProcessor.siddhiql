@@ -1,0 +1,210 @@
+/* Enter a unique ExecutionPlan */
+@Plan:name('Jira_UniqueTime_EventProcessor')
+
+/* Enter a unique description for ExecutionPlan */
+-- @Plan:description('ExecutionPlan')
+
+/* define streams/tables and write queries here ... */
+
+
+/*Imports*/
+@Import('Jira_Event_Input:1.0.0')
+define stream Jira_Event (eventType string, issueEventType string, projectName string, projectID string, projectURL string, projectAvatar string, issueType string, issueID string, issueSummary string, issueStatus string, timestamp long, severityLevel string, priority string, createdTime string);
+
+
+/*Exports*/
+@Export('outstanding_overall:1.0.0')
+define stream outstanding_overall (minTime string, maxTime string, issueCount long, latestIssue string, tableBody string);
+
+@Export('Outstanding_Project:1.0.0')
+define stream outstanding_project (incidentCount long, tableBody string, projectName string, projectID string, projectAvatar string, minTime string, maxTime string, latestIssue string);
+
+@Export('incidentCreated_Overall:1.0.0')
+define stream incidentsCrated_ovarall (incidentCount long, tableBody string, minTime string, maxTime string, latestIssue string);
+
+@Export('monthlyIncidentCreated_Project:1.0.0')
+define stream monthlyIncidentsCreated_project (incidentCount long, tableBody string, projectName string, projectID string, projectAvatar string, minTime string, maxTime string,latestIssue string);
+
+@Export('incidentCreated_Project:1.0.0')
+define stream incidentsCreated_project (incidentCount long, tableBody string, projectName string, projectID string, projectAvatar string, minTime string, maxTime string,latestIssue string);
+
+@Export('WOW_Overall:1.0.0')
+define stream WOW_overall (minTime string, maxTime string, issueCount long, latestIssue string, tableBody string);
+
+@Export('open_reOpen_Overall:1.0.0')
+define stream open_reOpen_overall (minTime string, maxTime string, issueCount long, latestIssue string, tableBody string);
+
+@Export('inProgress_Overall:1.0.0')
+define stream inProgress_overall (minTime string, maxTime string, issueCount long,latestIssue String);
+
+
+define trigger eventTrigger at every 10 sec;
+
+
+/*Processing*/
+from eventTrigger join Jira_Event#window.unique:time(issueID,60 min)
+select *
+insert into updatedTickets;
+
+
+/*Inprogress*/
+from updatedTickets[issueStatus == "In Progress"]#window.time(2 sec)
+select min(timestamp)+19800000-60000 as minTime , max(timestamp)+19800000+60000 as maxTime, count() as issueCount,issueID as latestIssue
+having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0)) 
+insert into inProgress_overall_1;
+
+from inProgress_overall_1#window.time(10 min)
+select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue
+insert all events into inProgress_overall_seq;
+
+from e1=inProgress_overall_seq[e1.maxCount==2]
+select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue
+insert into inProgress_overall;
+
+from every e1=inProgress_overall_seq, e2=inProgress_overall_seq[e1.maxCount < e2.maxCount ]
+select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue
+insert into inProgress_overall;
+
+
+/*wow*/
+from updatedTickets[issueStatus == "Waiting on WSO2"]#window.time(2 sec)
+select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
+custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueType,
+		   issueStatus,
+		   issueSummary,
+  		   priority,
+		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss")   
+) as tableBody
+having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0)) 
+insert into WOW_overall_1;
+
+from WOW_overall_1#window.time(10 min)
+select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
+insert all events into WOW_overall_seq;
+
+from e1=WOW_overall_seq[e1.maxCount==2]
+select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
+insert into WOW_overall;
+
+from every e1=WOW_overall_seq, e2=WOW_overall_seq[e1.maxCount < e2.maxCount ]
+select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue, e2.tableBody as tableBody
+insert into WOW_overall;
+
+
+/*open re-Open */
+from updatedTickets[issueStatus == "Open" or issueStatus == "Reopened"]#window.time(2 sec)
+select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
+custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueType,
+		   issueStatus,
+		   issueSummary,
+           priority,
+  		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
+) as tableBody
+having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0)) 
+insert into open_reOpen_overall_1;
+
+from open_reOpen_overall_1#window.time(10 min)
+select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
+insert all events into open_reOpen_overall_seq;
+
+from e1=open_reOpen_overall_seq[e1.maxCount==2]
+select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
+insert into open_reOpen_overall;
+
+from every e1=open_reOpen_overall_seq, e2=open_reOpen_overall_seq[e1.maxCount < e2.maxCount ]
+select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue, e2.tableBody as tableBody
+insert into open_reOpen_overall;
+
+
+/*outstanding tickets for a project*/
+from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.time(2 sec)
+select count() as issueCount ,custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueType,
+		   issueStatus,
+		   issueSummary,
+           severityLevel,
+  		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
+) as tableBody, projectName, projectID, projectAvatar,time:dateFormat(min(timestamp)+19800000-60000,'yyyy-MM-dd HH:mm') as minTime, time:dateFormat(max(timestamp)+19800000+60000,'yyyy-MM-dd HH:mm') as maxTime, issueID as latestIssue
+group by projectID
+having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0))
+insert into outstanding_1;
+
+from outstanding_1#window.time(10 min)
+select issueCount,tableBody,projectName, projectID, projectAvatar, minTime,maxTime,latestIssue,count() as alertCount
+group by projectID
+having (alertCount == 1)
+insert into outstanding_project_valid;
+
+from outstanding_project_valid
+select issueCount as incidentCount,tableBody,projectName, projectID, projectAvatar, minTime,maxTime,latestIssue
+insert into outstanding_project;
+
+/*outstanding Overall*/
+from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.time(2 sec)
+select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
+custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueType,
+		   issueStatus,
+		   issueSummary,
+           priority,
+  		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
+) as tableBody
+having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0)) 
+insert into outstanding_overall_1;
+
+from outstanding_overall_1#window.time(10 min)
+select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
+insert all events into outstanding_overall_seq;
+
+from e1=outstanding_overall_seq[e1.maxCount==2]
+select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
+insert into outstanding_overall;
+
+from every e1=outstanding_overall_seq, e2=outstanding_overall_seq[e1.maxCount < e2.maxCount ]
+select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue, e2.tableBody as tableBody
+insert into outstanding_overall;
+
+
+from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(10 min)
+select count() as incidentCount,custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueSummary,
+           severityLevel,
+  		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
+) as tableBody,time:dateFormat(min(timestamp)+19800000-60000,'yyyy-MM-dd HH:mm') as minTime, time:dateFormat(max(timestamp)+19800000+60000,'yyyy-MM-dd HH:mm') as maxTime, issueID as latestIssue
+having (incidentCount == 5 or (incidentCount > 5 and (incidentCount - 5) % 2 == 0)) 
+insert into incidentsCrated_ovarall;
+
+
+from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(10 min)
+select count() as incidentCount,custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueSummary,
+           severityLevel,
+  		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
+) as tableBody,projectName , projectID, projectAvatar,time:dateFormat(min(timestamp)+19800000-60000,'yyyy-MM-dd HH:mm') as minTime, time:dateFormat(max(timestamp)+19800000+60000,'yyyy-MM-dd HH:mm') as maxTime, issueID as latestIssue
+group by projectID
+having (incidentCount == 2 or (incidentCount > 2 and (incidentCount - 2) % 2 == 0)) 
+insert into incidentsCreated_project;
+
+
+from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(60 min)
+select count() as incidentCount,custom:toHTML(
+		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   issueSummary,
+           severityLevel,
+  		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
+) as tableBody,projectName , projectID, projectAvatar,time:dateFormat(min(timestamp)+19800000-60000,'yyyy-MM-dd HH:mm') as minTime, time:dateFormat(max(timestamp)+19800000+60000,'yyyy-MM-dd HH:mm') as maxTime, issueID as latestIssue
+group by projectID
+having (incidentCount == 5 or (incidentCount > 5 and (incidentCount - 5) % 2 == 0)) 
+insert into monthlyIncidentsCreated_project;

@@ -1,0 +1,64 @@
+{
+  "name": "Jira_Event_Input",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "eventType",
+      "type": "STRING"
+    },
+    {
+      "name": "issueEventType",
+      "type": "STRING"
+    },
+    {
+      "name": "projectName",
+      "type": "STRING"
+    },
+    {
+      "name": "projectID",
+      "type": "STRING"
+    },
+    {
+      "name": "projectURL",
+      "type": "STRING"
+    },
+    {
+      "name": "projectAvatar",
+      "type": "STRING"
+    },
+    {
+      "name": "issueType",
+      "type": "STRING"
+    },
+    {
+      "name": "issueID",
+      "type": "STRING"
+    },
+    {
+      "name": "issueSummary",
+      "type": "STRING"
+    },
+    {
+      "name": "issueStatus",
+      "type": "STRING"
+    },
+    {
+      "name": "timestamp",
+      "type": "LONG"
+    },
+    {
+      "name": "severityLevel",
+      "type": "STRING"
+    },
+    {
+      "name": "priority",
+      "type": "STRING"
+    },
+    {
+      "name": "createdTime",
+      "type": "STRING"
+    }
+  ]
+}

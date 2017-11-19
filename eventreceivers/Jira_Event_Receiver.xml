@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<eventReceiver name="Jira_Event_Receiver" statistics="disable"
+    trace="disable" xmlns="http://wso2.org/carbon/eventreceiver">
+    <from eventAdapterType="http">
+        <property name="transports">all</property>
+        <property name="basicAuthEnabled">true</property>
+    </from>
+    <mapping customMapping="enable" type="json">
+        <property>
+            <from jsonPath="$.webhookEvent"/>
+            <to default="NULL" name="eventType" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue_event_type_name"/>
+            <to default="NULL" name="issueEventType" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.project.name"/>
+            <to default="NULL" name="projectName" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.project.key"/>
+            <to default="NULL" name="projectID" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.project.self"/>
+            <to default="NULL" name="projectURL" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.project.avatarUrls.48x48"/>
+            <to default="NULL" name="projectAvatar" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.issuetype.name"/>
+            <to default="NULL" name="issueType" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.key"/>
+            <to default="NULL" name="issueID" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.summary"/>
+            <to default="NULL" name="issueSummary" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.status.name"/>
+            <to default="NULL" name="issueStatus" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.timestamp"/>
+            <to name="timestamp" type="long"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.created"/>
+            <to name="createdTime" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.priority.name"/>
+            <to name="priority" type="string"/>
+        </property>
+        <property>
+            <from jsonPath="$.issue.fields.customfield_10020.value"/>
+            <to name="severityLevel" type="string"/>
+        </property>
+    </mapping>
+    <to streamName="Jira_Event_Input" version="1.0.0"/>
+</eventReceiver>

@@ -1,0 +1,40 @@
+{
+  "name": "Outstanding_Project",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "incidentCount",
+      "type": "LONG"
+    },
+    {
+      "name": "tableBody",
+      "type": "STRING"
+    },
+    {
+      "name": "projectName",
+      "type": "STRING"
+    },
+    {
+      "name": "projectID",
+      "type": "STRING"
+    },
+    {
+      "name": "projectAvatar",
+      "type": "STRING"
+    },
+    {
+      "name": "minTime",
+      "type": "STRING"
+    },
+    {
+      "name": "maxTime",
+      "type": "STRING"
+    },
+    {
+      "name": "latestIssue",
+      "type": "STRING"
+    }
+  ]
+}

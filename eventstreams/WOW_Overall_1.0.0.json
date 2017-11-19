@@ -1,0 +1,28 @@
+{
+  "name": "WOW_Overall",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "minTime",
+      "type": "STRING"
+    },
+    {
+      "name": "maxTime",
+      "type": "STRING"
+    },
+    {
+      "name": "issueCount",
+      "type": "LONG"
+    },
+    {
+      "name": "latestIssue",
+      "type": "STRING"
+    },
+    {
+      "name": "tableBody",
+      "type": "STRING"
+    }
+  ]
+}

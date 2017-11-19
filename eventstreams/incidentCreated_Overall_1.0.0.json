@@ -1,0 +1,28 @@
+{
+  "name": "incidentCreated_Overall",
+  "version": "1.0.0",
+  "nickName": "",
+  "description": "",
+  "payloadData": [
+    {
+      "name": "incidentCount",
+      "type": "LONG"
+    },
+    {
+      "name": "tableBody",
+      "type": "STRING"
+    },
+    {
+      "name": "minTime",
+      "type": "STRING"
+    },
+    {
+      "name": "maxTime",
+      "type": "STRING"
+    },
+    {
+      "name": "latestIssue",
+      "type": "STRING"
+    }
+  ]
+}
