@@ -131,7 +131,7 @@ select count() as issueCount ,custom:toHTML(
 		   issueSummary,
            severityLevel,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
-) as tableBody, projectName, projectID, projectAvatar,time:dateFormat(min(timestamp)+19800000-60000,'yyyy-MM-dd HH:mm') as minTime, time:dateFormat(max(timestamp)+19800000+60000,'yyyy-MM-dd HH:mm') as maxTime, issueID as latestIssue
+) as tableBody, projectName, projectID, projectAvatar,min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, issueID as latestIssue
 group by projectID
 having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0))
 insert into outstanding_1;
@@ -143,7 +143,7 @@ having (alertCount == 1)
 insert into outstanding_project_valid;
 
 from outstanding_project_valid
-select issueCount as incidentCount,tableBody,projectName, projectID, projectAvatar, minTime,maxTime,latestIssue
+select issueCount as incidentCount,tableBody,projectName, projectID, projectAvatar, time:dateFormat(minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(maxTime,'yyyy-MM-dd HH:mm') as maxTime,latestIssue
 insert into outstanding_project;
 
 /*outstanding Overall*/
