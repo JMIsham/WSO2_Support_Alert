@@ -337,7 +337,7 @@
                     </inline>
   </mapping>
   <to eventAdapterType="email">
-    <property name="email.subject">Support Alert - Tickets are in Outstanding Status</property>
+    <property name="email.subject">Support Alert - Tickets are in Outstanding status</property>
     <property name="email.address">isham@wso2.com</property>
     <property name="email.type">text/html</property>
   </to>

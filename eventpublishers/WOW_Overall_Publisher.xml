@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <eventPublisher name="WOW_Overall_Publisher" statistics="disable"
-  trace="disable" xmlns="http://wso2.org/carbon/eventpublisher">
+  trace="enable" xmlns="http://wso2.org/carbon/eventpublisher">
   <from streamName="WOW_Overall" version="1.0.0"/>
   <mapping customMapping="enable" type="text">
     <inline>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
