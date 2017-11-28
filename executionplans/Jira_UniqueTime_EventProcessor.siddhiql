@@ -55,11 +55,11 @@ having (issueCount == 70 or (issueCount > 70 and (issueCount - 70) % 10 == 0))
 insert into inProgress_overall_1;
 
 /*this keep trak of alerts thrown in last 24 hours */
-from inProgress_overall_1#window.time(1 min)
+from inProgress_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue
 insert all events into inProgress_overall_seq;
 
-from inProgress_overall_1#window.time(1 min)
+from inProgress_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, count() as alerts
 insert into inProgress_overall_seq2;
 
@@ -91,11 +91,11 @@ custom:toHTML(
 having (issueCount == 10 or (issueCount > 10 and (issueCount - 10) % 5 == 0)) 
 insert into WOW_overall_1;
 
-from WOW_overall_1#window.time(1 min)
+from WOW_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
 insert all events into WOW_overall_seq;
 
-from WOW_overall_1#window.time(1 min)
+from WOW_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody, count() as alerts
 insert into WOW_overall_seq2;
 
@@ -120,19 +120,19 @@ custom:toHTML(
            priority,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
 ) as tableBody
-having (issueCount == 2 or (issueCount > 2 and (issueCount - 2) % 2 == 0)) 
+having (issueCount == 10 or (issueCount > 10 and (issueCount - 10) % 5 == 0)) 
 insert into open_reOpen_overall_1;
 
-from open_reOpen_overall_1#window.time(10 sec)
+from open_reOpen_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
 insert all events into open_reOpen_overall_seq;
 
-from open_reOpen_overall_1#window.time(10 sec)
+from open_reOpen_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody, count() as alerts
 insert into open_reOpen_overall_seq2;
 
 
-from every e1=open_reOpen_overall_seq2[e1.maxCount==2 and e1.alerts==1]
+from every e1=open_reOpen_overall_seq2[e1.maxCount==10 and e1.alerts==1]
 select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
 insert into open_reOpen_overall;
 
@@ -158,7 +158,7 @@ group by projectID
 having (issueCount == 5 or (issueCount > 5 and (issueCount - 5) % 2 == 0))
 insert into outstanding_1;
 
-from outstanding_1#window.time(10 min)
+from outstanding_1#window.time(1440 min)
 select issueCount,tableBody,projectName, projectID, projectAvatar, minTime,maxTime,latestIssue,count() as alertCount
 group by projectID
 having (alertCount == 1)
@@ -183,11 +183,11 @@ custom:toHTML(
 having (issueCount == 100 or (issueCount > 100 and (issueCount - 100) % 20 == 0)) 
 insert into outstanding_overall_1;
 
-from outstanding_overall_1#window.time(10 min)
+from outstanding_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
 insert all events into outstanding_overall_seq;
 
-from outstanding_overall_1#window.time(10 min)
+from outstanding_overall_1#window.time(1440 min)
 select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody, count() as alerts
 insert into outstanding_overall_seq2;
 
@@ -200,7 +200,7 @@ select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat
 insert into outstanding_overall;
 
 /*when more than 5 incidents are been created with in a day*/
-from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(60 min)
+from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(1440 min)
 select count() as incidentCount,custom:toHTML(
 		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
 		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
@@ -212,7 +212,7 @@ having (incidentCount == 5 or (incidentCount > 5 and (incidentCount - 5) % 2 == 
 insert into incidentsCrated_ovarall;
 
 /*when more than 3 incidents are been created form a project with in a day*/
-from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(10 min)
+from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(1440 min)
 select count() as incidentCount,custom:toHTML(
 		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueSummary,
