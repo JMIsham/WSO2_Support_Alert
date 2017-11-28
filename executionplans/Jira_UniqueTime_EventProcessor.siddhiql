@@ -37,6 +37,14 @@ define stream open_reOpen_overall (minTime string, maxTime string, issueCount lo
 @Export('inProgress_Overall:1.0.0')
 define stream inProgress_overall (minTime string, maxTime string, issueCount long,latestIssue String);
 
+define stream inProgress_overall_12 (minTime string, maxTime string, issueCount long,latestIssue String, currentTime long);
+
+define stream WOW_overall_12(minTime string, maxTime string, issueCount long,latestIssue String,tableBody string, currentTime long);
+
+define stream open_reOpen_overall_12(minTime string, maxTime string, issueCount long,latestIssue String,tableBody string, currentTime long);
+
+define stream outstanding_overall_12(minTime string, maxTime string, issueCount long,latestIssue String,tableBody string, currentTime long);
+
 
 define trigger eventTrigger at every 5 sec;
 
@@ -46,38 +54,36 @@ from eventTrigger join Jira_Event#window.unique:time(issueID,43200 min)
 select *
 insert into updatedTickets;
 
-
-/*Inprogress*/
-/*check if there are 70 or more than 70 incidents in Inprogress status. when count is more than 70 only send the next alert when it increased by 10xN */
-from updatedTickets[issueStatus == "In Progress"]#window.time(2 sec)
+from updatedTickets[issueStatus == "In Progress"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime , max(timestamp)+19800000+60000 as maxTime, count() as issueCount,issueID as latestIssue
-having (issueCount == 70 or (issueCount > 70 and (issueCount - 70) % 10 == 0)) 
+having (issueCount >= 2) 
 insert into inProgress_overall_1;
 
-/*this keep trak of alerts thrown in last 24 hours */
-from inProgress_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue
-insert all events into inProgress_overall_seq;
+from inProgress_overall_12#window.lengthBatch(1) as L right outer join inProgress_overall_1 as alert unidirectional
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue, time: timestampInMilliseconds () as currentTime
+insert into inProgress_overall2 ;
 
-from inProgress_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, count() as alerts
-insert into inProgress_overall_seq2;
+from inProgress_overall2[lastIssueCount is null]
+select minTime, maxTime, issueCount , latestIssue ,currentTime
+insert into inProgress_overall_12;
 
-/*this will allow the very first alert sent */
-from every e1=inProgress_overall_seq2[e1.maxCount==70 and e1.alerts==1]
-select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue
+from inProgress_overall2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+select minTime, maxTime, issueCount , latestIssue ,currentTime
+insert into inProgress_overall_12;
+
+from inProgress_overall2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 2]
+select minTime, maxTime, issueCount , latestIssue , currentTime
+insert into inProgress_overall_12;
+
+from inProgress_overall_12
+select minTime, maxTime, issueCount , latestIssue
 insert into inProgress_overall;
 
-/*this will allow the alert to pass if and only the max count is higher than previous alrts*/
-/*since we are throwing all events from 2nd query, when the lagerst alert leave the time window, it will reset the new maxCount*/
-from every e1=inProgress_overall_seq, e2=inProgress_overall_seq[e1.maxCount < e2.maxCount ]
-select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue
-insert into inProgress_overall;
 
 
 /*wow*/
 /*check more than 10 waiting on wso2 */
-from updatedTickets[issueStatus == "Waiting on WSO2"]#window.time(2 sec)
+from updatedTickets[issueStatus == "Waiting on WSO2"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
 custom:toHTML(
 		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
@@ -88,28 +94,34 @@ custom:toHTML(
   		   priority,
 		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss")   
 ) as tableBody
-having (issueCount == 10 or (issueCount > 10 and (issueCount - 10) % 5 == 0)) 
+having (issueCount >= 10)
 insert into WOW_overall_1;
 
-from WOW_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
-insert all events into WOW_overall_seq;
+from WOW_overall_12#window.lengthBatch(1) as L right outer join WOW_overall_1 as alert unidirectional
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
+insert into WOW_overall_2 ;
 
-from WOW_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody, count() as alerts
-insert into WOW_overall_seq2;
+from WOW_overall_2[lastIssueCount is null]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into WOW_overall_12;
 
-from every e1=WOW_overall_seq2[e1.maxCount==10 and e1.alerts==1]
-select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
+from WOW_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into WOW_overall_12;
+
+from WOW_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 5]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into WOW_overall_12;
+
+from WOW_overall_12
+select minTime, maxTime, issueCount , latestIssue,tableBody
 insert into WOW_overall;
 
-from every e1=WOW_overall_seq, e2=WOW_overall_seq[e1.maxCount < e2.maxCount ]
-select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue, e2.tableBody as tableBody
-insert into WOW_overall;
+
 
 
 /*open re-Open */
-from updatedTickets[issueStatus == "Open" or issueStatus == "Reopened"]#window.time(2 sec)
+from updatedTickets[issueStatus == "Open" or issueStatus == "Reopened"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
 custom:toHTML(
 		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
@@ -120,32 +132,35 @@ custom:toHTML(
            priority,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
 ) as tableBody
-having (issueCount == 10 or (issueCount > 10 and (issueCount - 10) % 5 == 0)) 
+having (issueCount >= 2 ) 
 insert into open_reOpen_overall_1;
 
-from open_reOpen_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
-insert all events into open_reOpen_overall_seq;
+from open_reOpen_overall_12#window.lengthBatch(1) as L right outer join open_reOpen_overall_1 as alert unidirectional
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
+insert into open_reOpen_overall_2 ;
 
-from open_reOpen_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody, count() as alerts
-insert into open_reOpen_overall_seq2;
+from open_reOpen_overall_2[lastIssueCount is null]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into open_reOpen_overall_12;
 
+from open_reOpen_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into open_reOpen_overall_12;
 
-from every e1=open_reOpen_overall_seq2[e1.maxCount==10 and e1.alerts==1]
-select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
+from open_reOpen_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 3]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into open_reOpen_overall_12;
+
+from open_reOpen_overall_12
+select minTime, maxTime, issueCount , latestIssue,tableBody
 insert into open_reOpen_overall;
 
-
-from every e1=open_reOpen_overall_seq, e2=open_reOpen_overall_seq[e1.maxCount < e2.maxCount ]
-select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue, e2.tableBody as tableBody
-insert into open_reOpen_overall;
 
 
 
 /*outstanding tickets for a project*/
 /*check if there are more than 5 tickets are in the outstanding status from a project */
-from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.time(2 sec)
+from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.timeBatch(2 sec)
 select count() as issueCount ,custom:toHTML(
 		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueType,
@@ -155,7 +170,7 @@ select count() as issueCount ,custom:toHTML(
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
 ) as tableBody, projectName, projectID, projectAvatar,min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, issueID as latestIssue
 group by projectID
-having (issueCount == 5 or (issueCount > 5 and (issueCount - 5) % 2 == 0))
+having (issueCount >= 5)
 insert into outstanding_1;
 
 from outstanding_1#window.time(1440 min)
@@ -169,7 +184,7 @@ select issueCount as incidentCount,tableBody,projectName, projectID, projectAvat
 insert into outstanding_project;
 
 /*outstanding Overall*/
-from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.time(2 sec)
+from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
 custom:toHTML(
 		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
@@ -180,23 +195,27 @@ custom:toHTML(
            priority,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
 ) as tableBody
-having (issueCount == 100 or (issueCount > 100 and (issueCount - 100) % 20 == 0)) 
+having (issueCount >= 100) 
 insert into outstanding_overall_1;
 
-from outstanding_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody
-insert all events into outstanding_overall_seq;
+from outstanding_overall_12#window.lengthBatch(1) as L right outer join outstanding_overall_1 as alert unidirectional
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
+insert into outstanding_overall_2 ;
 
-from outstanding_overall_1#window.time(1440 min)
-select minTime, maxTime, issueCount , max(issueCount) as maxCount, latestIssue, tableBody, count() as alerts
-insert into outstanding_overall_seq2;
+from outstanding_overall_2[lastIssueCount is null]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into outstanding_overall_12;
 
-from every e1=outstanding_overall_seq2[e1.maxCount==100 and e1.alerts==1]
-select time:dateFormat(e1.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e1.maxTime,'yyyy-MM-dd HH:mm') as maxTime,issueCount,latestIssue,tableBody
-insert into outstanding_overall;
+from outstanding_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into outstanding_overall_12;
 
-from every e1=outstanding_overall_seq, e2=outstanding_overall_seq[e1.maxCount < e2.maxCount ]
-select time:dateFormat(e2.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(e2.maxTime,'yyyy-MM-dd HH:mm') as maxTime,e2.issueCount as issueCount,e2.latestIssue as latestIssue, e2.tableBody as tableBody
+from outstanding_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 20]
+select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
+insert into outstanding_overall_12;
+
+from outstanding_overall_12
+select minTime, maxTime, issueCount , latestIssue,tableBody
 insert into outstanding_overall;
 
 /*when more than 5 incidents are been created with in a day*/
