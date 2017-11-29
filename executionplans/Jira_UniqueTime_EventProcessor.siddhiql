@@ -37,16 +37,16 @@ define stream open_reOpen_overall (minTime string, maxTime string, issueCount lo
 @Export('inProgress_Overall:1.0.0')
 define stream inProgress_overall (minTime string, maxTime string, issueCount long,latestIssue String);
 
-define stream inProgress_overall_12 (minTime string, maxTime string, issueCount long,latestIssue String, currentTime long);
+define stream inProgress_overall_12 (minTime long, maxTime long, issueCount long,latestIssue String, currentTime long);
 
-define stream WOW_overall_12(minTime string, maxTime string, issueCount long,latestIssue String,tableBody string, currentTime long);
+define stream WOW_overall_12(minTime long, maxTime long, issueCount long,latestIssue String,tableBody string, currentTime long);
 
-define stream open_reOpen_overall_12(minTime string, maxTime string, issueCount long,latestIssue String,tableBody string, currentTime long);
+define stream open_reOpen_overall_12(minTime long, maxTime long, issueCount long,latestIssue String,tableBody string, currentTime long);
 
-define stream outstanding_overall_12(minTime string, maxTime string, issueCount long,latestIssue String,tableBody string, currentTime long);
+define stream outstanding_overall_12(minTime long, maxTime long, issueCount long,latestIssue String,tableBody string, currentTime long);
 
 
-define trigger eventTrigger at every 60 min;
+define trigger eventTrigger at every 5 sec;
 
 
 /*Processing*/
@@ -60,23 +60,27 @@ having (issueCount >= 70)
 insert into inProgress_overall_1;
 
 from inProgress_overall_12#window.lengthBatch(1) as L right outer join inProgress_overall_1 as alert unidirectional
-select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue, time: timestampInMilliseconds () as currentTime
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, alert.minTime as minTime,alert.maxTime as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue, time: timestampInMilliseconds () as currentTime
 insert into inProgress_overall2 ;
 
 from inProgress_overall2[lastIssueCount is null]
 select minTime, maxTime, issueCount , latestIssue ,currentTime
 insert into inProgress_overall_12;
 
-from inProgress_overall2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+from inProgress_overall2[not(lastTime is null)]
+select *
+insert into inProgress_overall2_next;
+
+from inProgress_overall2_next[not(lastIssueCount is null) and not(lastTime is null) and time:dateDiff(lastTime,currentTime) >= 1]
 select minTime, maxTime, issueCount , latestIssue ,currentTime
 insert into inProgress_overall_12;
 
-from inProgress_overall2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 10]
+from inProgress_overall2_next[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 10]
 select minTime, maxTime, issueCount , latestIssue , currentTime
 insert into inProgress_overall_12;
 
 from inProgress_overall_12
-select minTime, maxTime, issueCount , latestIssue
+select time:dateFormat(minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(maxTime,'yyyy-MM-dd HH:mm') as maxTime, issueCount , latestIssue
 insert into inProgress_overall;
 
 
@@ -98,23 +102,27 @@ having (issueCount >= 10)
 insert into WOW_overall_1;
 
 from WOW_overall_12#window.lengthBatch(1) as L right outer join WOW_overall_1 as alert unidirectional
-select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, alert.minTime as minTime,alert.maxTime as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
 insert into WOW_overall_2 ;
 
 from WOW_overall_2[lastIssueCount is null]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into WOW_overall_12;
 
-from WOW_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+from WOW_overall_2[not(lastTime is null)]
+select * 
+insert into WOW_overall_2_next;
+
+from WOW_overall_2_next[not(lastIssueCount is null) and not(lastTime is null) and time:dateDiff(lastTime,currentTime) >= 1]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into WOW_overall_12;
 
-from WOW_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 5]
+from WOW_overall_2_next[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 5]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into WOW_overall_12;
 
 from WOW_overall_12
-select minTime, maxTime, issueCount , latestIssue,tableBody
+select time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime, issueCount , latestIssue,tableBody
 insert into WOW_overall;
 
 
@@ -132,27 +140,31 @@ custom:toHTML(
            priority,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
 ) as tableBody
-having (issueCount >= 10 ) 
+having (issueCount >= 2 ) 
 insert into open_reOpen_overall_1;
 
 from open_reOpen_overall_12#window.lengthBatch(1) as L right outer join open_reOpen_overall_1 as alert unidirectional
-select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, alert.minTime as minTime,alert.maxTime as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
 insert into open_reOpen_overall_2 ;
 
 from open_reOpen_overall_2[lastIssueCount is null]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into open_reOpen_overall_12;
 
-from open_reOpen_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+from open_reOpen_overall_2[not(lastTime is null)]
+select * 
+insert into open_reOpen_overall_2_next;
+
+from open_reOpen_overall_2_next[not(lastIssueCount is null) and not(lastTime is null) and time:dateDiff(currentTime,lastTime) >= 1]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into open_reOpen_overall_12;
 
-from open_reOpen_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 5]
+from open_reOpen_overall_2_next[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 2]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into open_reOpen_overall_12;
 
 from open_reOpen_overall_12
-select minTime, maxTime, issueCount , latestIssue,tableBody
+select time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime, issueCount , latestIssue,tableBody
 insert into open_reOpen_overall;
 
 
@@ -199,23 +211,27 @@ having (issueCount >= 100)
 insert into outstanding_overall_1;
 
 from outstanding_overall_12#window.lengthBatch(1) as L right outer join outstanding_overall_1 as alert unidirectional
-select L.issueCount as lastIssueCount, L.currentTime as lastTime, time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
+select L.issueCount as lastIssueCount, L.currentTime as lastTime, alert.minTime as minTime,alert.maxTime as maxTime,alert.issueCount as issueCount,alert.latestIssue as latestIssue,alert.tableBody as tableBody, time: timestampInMilliseconds () as currentTime
 insert into outstanding_overall_2 ;
 
 from outstanding_overall_2[lastIssueCount is null]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into outstanding_overall_12;
 
-from outstanding_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) >= 1]
+from outstanding_overall_2[not(lastTime is null)]
+select *
+insert into outstanding_overall_2_next;
+
+from outstanding_overall_2_next[not(lastIssueCount is null) and not(lastTime is null) and time:dateDiff(lastTime,currentTime) >= 1]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into outstanding_overall_12;
 
-from outstanding_overall_2[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 20]
+from outstanding_overall_2_next[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 20]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into outstanding_overall_12;
 
 from outstanding_overall_12
-select minTime, maxTime, issueCount , latestIssue,tableBody
+select time:dateFormat(alert.minTime,'yyyy-MM-dd HH:mm') as minTime,time:dateFormat(alert.maxTime,'yyyy-MM-dd HH:mm') as maxTime, issueCount , latestIssue,tableBody
 insert into outstanding_overall;
 
 /*when more than 5 incidents are been created with in a day*/
