@@ -46,7 +46,7 @@ define stream open_reOpen_overall_12(minTime long, maxTime long, issueCount long
 define stream outstanding_overall_12(minTime long, maxTime long, issueCount long,latestIssue String,tableBody string, currentTime long);
 
 
-define trigger eventTrigger at every 5 sec;
+define trigger eventTrigger at every 60 min;
 
 
 /*Processing*/
@@ -140,7 +140,7 @@ custom:toHTML(
            priority,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
 ) as tableBody
-having (issueCount >= 2 ) 
+having (issueCount >= 10 ) 
 insert into open_reOpen_overall_1;
 
 from open_reOpen_overall_12#window.lengthBatch(1) as L right outer join open_reOpen_overall_1 as alert unidirectional
@@ -159,7 +159,7 @@ from open_reOpen_overall_2_next[not(lastIssueCount is null) and not(lastTime is 
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into open_reOpen_overall_12;
 
-from open_reOpen_overall_2_next[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 2]
+from open_reOpen_overall_2_next[not(lastIssueCount is null) and time:dateDiff(lastTime,currentTime) < 1 and issueCount - lastIssueCount >= 5]
 select minTime, maxTime, issueCount , latestIssue,tableBody ,currentTime
 insert into open_reOpen_overall_12;
 
