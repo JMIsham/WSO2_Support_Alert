@@ -90,8 +90,8 @@ insert into inProgress_overall;
 from updatedTickets[issueStatus == "Waiting on WSO2"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
 custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueType,
 		   issueStatus,
 		   issueSummary,
@@ -132,8 +132,8 @@ insert into WOW_overall;
 from updatedTickets[issueStatus == "Open" or issueStatus == "Reopened"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
 custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueType,
 		   issueStatus,
 		   issueSummary,
@@ -174,7 +174,7 @@ insert into open_reOpen_overall;
 /*check if there are more than 5 tickets are in the outstanding status from a project */
 from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.timeBatch(2 sec)
 select count() as issueCount ,custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueType,
 		   issueStatus,
 		   issueSummary,
@@ -199,8 +199,8 @@ insert into outstanding_project;
 from updatedTickets[issueStatus != "Closed" and issueStatus != "Resolved"]#window.timeBatch(2 sec)
 select min(timestamp)+19800000-60000 as minTime, max(timestamp)+19800000+60000 as maxTime, count() as issueCount, issueID as latestIssue,
 custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueType,
 		   issueStatus,
 		   issueSummary,
@@ -237,8 +237,8 @@ insert into outstanding_overall;
 /*when more than 5 incidents are been created with in a day*/
 from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(1440 min)
 select count() as incidentCount,custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/projects/',projectID,'>',projectID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueSummary,
            severityLevel,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
@@ -249,7 +249,7 @@ insert into incidentsCrated_ovarall;
 /*when more than 3 incidents are been created form a project with in a day*/
 from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(1440 min)
 select count() as incidentCount,custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueSummary,
            severityLevel,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 
@@ -261,7 +261,7 @@ insert into incidentsCreated_project;
 /*when more than 15 incidents are been created from a project in a month */
 from Jira_Event[issueEventType =="issue_created" and issueType == "Incident"]#window.time(43200 min)
 select count() as incidentCount,custom:toHTML(
-		   str:concat('<a href=https://support-staging.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
+		   str:concat('<a href=https://support.wso2.com/jira/browse/',issueID,'>',issueID,'</a>'),
 		   issueSummary,
            severityLevel,
   		   time:dateAdd(str:concat(str:substr(createdTime,0,10)," ",str:substr(createdTime,11,8)), 810, 'MINUTE',"yyyy-MM-dd HH:mm:ss") 

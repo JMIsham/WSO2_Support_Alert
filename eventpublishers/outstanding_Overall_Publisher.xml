@@ -265,7 +265,7 @@
                             &lt;table id="header-pattern" cellspacing="0" cellpadding="0" border="0" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt"&gt; 
                                 &lt;tbody&gt;
                                     &lt;tr&gt; 
-                                        &lt;td id="header-avatar-image-container" valign="top" style="padding: 0px; border-collapse: collapse; vertical-align: top; width: 32px; padding-right: 8px" width="32"&gt; &lt;img id="header-avatar-image" class="image_fix" src="https://support-staging.wso2.com/jira/secure/projectavatar?pid=14292&amp;avatarId=12520" height="32" width="32" border="0" style="border-radius: 3px; vertical-align: top"&gt; &lt;/td&gt; 
+                                        &lt;td id="header-avatar-image-container" valign="top" style="padding: 0px; border-collapse: collapse; vertical-align: top; width: 32px; padding-right: 8px" width="32"&gt; &lt;img id="header-avatar-image" class="image_fix" src="https://support.wso2.com/jira/secure/projectavatar?pid=14292&amp;avatarId=12520" height="32" width="32" border="0" style="border-radius: 3px; vertical-align: top"&gt; &lt;/td&gt; 
                                         &lt;td id="header-text-container" valign="middle" style="padding: 0px; border-collapse: collapse; vertical-align: middle; font-family: Arial, sans-serif; font-size: 14px; line-height: 20px; mso-line-height-rule: exactly; mso-text-raise: 1px"&gt; &lt;strong&gt;Too Many Tickets are Waiting for a response from WSO2!&lt;/strong&gt;&lt;/td&gt; 
                                     &lt;/tr&gt; 
                                 &lt;/tbody&gt;
@@ -281,7 +281,7 @@
                                                 &lt;tbody&gt;
                                                     &lt;tr&gt; 
                                                         &lt;td style="vertical-align: top;; padding: 0px; border-collapse: collapse; padding-right: 5px; font-size: 20px; color:#2e669e; line-height: 30px; mso-line-height-rule: exactly" class="page-title-pattern-header-container"&gt; &lt;span class="page-title-pattern-header" style="font-family: Arial, sans-serif; padding: 0; font-size: 20px; line-height: 30px; mso-text-raise: 2px; mso-line-height-rule: exactly; vertical-align: middle"&gt;{{issueCount}} Tickets are Waiting for a response from WSO2 at the moment&lt;/span&gt; &lt;/td&gt;
-                                                        &lt;td style="padding: 0px; border-collapse: collapse; font: normal 14px/20px Arial, sans-serif; padding: 2px 0 2px 5px; vertical-align: top"&gt; &lt;a class="button1" target="_blank"  href="https://support-staging.wso2.com/jira/browse/{{latestIssue}}?jql=status%20!%3D%20Resolved%20and%20status%20!%3D%20Closed%20and%20status%20!%3D%20%22Waiting%20on%20Client%22%20ORDER%20BY%20updated%20DESC"&gt;Go to Dashbord&lt;/a&gt; &lt;/td&gt;
+                                                        &lt;td style="padding: 0px; border-collapse: collapse; font: normal 14px/20px Arial, sans-serif; padding: 2px 0 2px 5px; vertical-align: top"&gt; &lt;a class="button1" target="_blank"  href="https://support.wso2.com/jira/browse/{{latestIssue}}?jql=status%20!%3D%20Resolved%20and%20status%20!%3D%20Closed%20and%20status%20!%3D%20%22Waiting%20on%20Client%22%20ORDER%20BY%20updated%20DESC"&gt;Go to Dashbord&lt;/a&gt; &lt;/td&gt;
 
                                                     &lt;/tr&gt;   
                                                 &lt;/tbody&gt;
